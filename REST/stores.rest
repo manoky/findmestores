@@ -1,0 +1,17 @@
+POST http://localhost:3000/api/createCoffeeStore HTTP/1.1
+content-type: application/json
+
+{
+    "id": "5960c9eb1de7653a4778566e",
+    "address": "Alte Schönhauser Straße 2",
+    "neighborhood": "Rosa Luxemburg Platz",
+    "name": "Tinman Berlin",
+    "votes": 0,
+    "imgUrl": "https://picsum.photos/id/1005/5760/3840"
+}
+
+###
+
+GET http://localhost:3000/api/coffee-stores HTTP/1.1
+Accept: application/json
+
