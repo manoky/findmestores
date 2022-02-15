@@ -46,7 +46,9 @@ export const FetchStores = async ({
   try {
     const resp = await fetchStoreRequest(getStoresRoute(latlong, query, limit));
     const images = await fetchImages(limit);
-
+    if (!resp.ok) {
+      throw new Error("Something went wrong fetching stores");
+    }
     const data = await resp.json();
     const stores = data.results.map(
       (store: CoffeeStoreResponseDataType, i: number) => ({
@@ -117,7 +119,7 @@ export const FetchStores = async ({
 
     return allStores as unknown as CoffeeStoreDataType[];
   } catch (err) {
-    if (err instanceof Error) throw new Error(err.message);
+    console.log(err);
   }
   return [];
 };

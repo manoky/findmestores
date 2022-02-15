@@ -1,9 +1,13 @@
 import styles from "styles/loader.module.css";
+import cls from "classnames";
 
-const Loader = () => {
+interface LoaderProps {
+  small?: boolean;
+}
+const Loader = ({ small }: LoaderProps) => {
   return (
     <div className={styles.loaderWrapper}>
-      <div className={styles.loader}></div>
+      <div className={cls(styles.loader, { lower: small })}></div>
     </div>
   );
 };

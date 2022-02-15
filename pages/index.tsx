@@ -1,7 +1,6 @@
 import type { NextPage, GetStaticProps } from "next";
 import Head from "next/head";
 import Image from "next/image";
-import { useRouter } from "next/router";
 import Banner from "components/Banner";
 import CardList from "components/CardList";
 import styles from "styles/Home.module.css";
@@ -16,16 +15,16 @@ interface CoffeeStoreProps {
   stores: CoffeeStoreDataType[];
 }
 
-const Home: NextPage<CoffeeStoreProps> = ({ stores: initialStore }) => {
+const Home: NextPage<CoffeeStoreProps> = ({ stores: initialStores }) => {
   const {
     dispatch,
     state: { latLong, nearByStores, searchTerm },
   } = useStoreContext();
 
   const { locationError, acessLocation, isLocating } = useLocation();
-  const [stores, setStores] = useState(searchTerm ? [] : initialStore);
+  const [stores, setStores] = useState(initialStores);
   const [query, setQuery] = useState("");
-  const router = useRouter();
+  const [loading, setSoading] = useState(false);
 
   const onButtonClick = () => {
     acessLocation();
@@ -49,6 +48,7 @@ const Home: NextPage<CoffeeStoreProps> = ({ stores: initialStore }) => {
   }, [dispatch, latLong, searchTerm]);
 
   useEffect(() => {
+    setSoading(true);
     async function fetchStores() {
       const data = await fetch(
         `api/coffee-stores?}&limit=9&query=${searchTerm}`
@@ -58,24 +58,23 @@ const Home: NextPage<CoffeeStoreProps> = ({ stores: initialStore }) => {
       if (stores) {
         setStores(stores);
       }
+      setSoading(false);
     }
 
     if (searchTerm) {
       fetchStores();
+    } else {
+      setStores(initialStores);
+      setSoading(false);
     }
-  }, [searchTerm]);
+  }, [searchTerm, initialStores]);
 
   const handleSearch = () => {
     if (query) {
       dispatch({ type: "SET_QUERY", payload: query });
       setQuery("");
-      router.push(`/?search=${query}`);
     }
   };
-
-  if (stores.length === 0) {
-    return <Loader />;
-  }
 
   return (
     <div className={styles.container}>
@@ -95,23 +94,36 @@ const Home: NextPage<CoffeeStoreProps> = ({ stores: initialStore }) => {
         />
 
         {!!locationError && `Sometning went wrong: ${locationError}`}
-        <div className={styles.heroImage}>
-          <Image src="/static/hero-image.png" alt="" width={700} height={400} />
-        </div>
+        {loading ? (
+          <Loader small />
+        ) : stores.length === 0 ? (
+          <p className={styles.heading2}>Ops! no stores found</p>
+        ) : (
+          <>
+            <div className={styles.heroImage}>
+              <Image
+                src="/static/hero-image.png"
+                alt=""
+                width={700}
+                height={400}
+              />
+            </div>
 
-        {nearByStores.length > 0 ? (
-          <CardList
-            stores={nearByStores}
-            title={`${nearByStores[0].category} stores near me`}
-          />
-        ) : null}
+            {nearByStores.length > 0 ? (
+              <CardList
+                stores={nearByStores}
+                title={`${nearByStores[0].category} stores near me`}
+              />
+            ) : null}
 
-        {stores.length > 0 ? (
-          <CardList
-            stores={stores}
-            title={`Berlin ${stores[0].category} stores`}
-          />
-        ) : null}
+            {stores.length > 0 ? (
+              <CardList
+                stores={stores}
+                title={`Berlin ${stores[0].category} stores`}
+              />
+            ) : null}
+          </>
+        )}
       </main>
     </div>
   );

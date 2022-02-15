@@ -67,6 +67,7 @@ const CoffeeStore: NextPage<Props> = ({ store: initialStore }) => {
             height={360}
             alt={store.name}
             className={styles.storeImg}
+            priority
           />
         </div>
         <div className={cls("glass", styles.col2)}>
@@ -114,7 +115,6 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
           (store: CoffeeStoreDataType) => store.id === params?.id
         ) || null,
     },
-    revalidate: 10,
   };
 };
 export const getStaticPaths: GetStaticPaths = async () => {
