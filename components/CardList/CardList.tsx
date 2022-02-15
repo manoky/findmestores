@@ -21,7 +21,7 @@ const CardList: React.FC<CardListProps> = ({ stores, title }) => {
                   key={store.id}
                   name={store.name}
                   imgUrl={store.imgUrl}
-                  href={`/coffee-store/${store.id}`}
+                  href={`/stores/${store.id}`}
                   className={styles.card}
                 />
               );

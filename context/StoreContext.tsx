@@ -15,7 +15,7 @@ interface StoreContextProps {
 const initialState: StateProps = {
   latLong: "",
   nearByStores: [],
-  searchTerm: "coffee",
+  searchTerm: "",
 };
 
 type ACTIONS =

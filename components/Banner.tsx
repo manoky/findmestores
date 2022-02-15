@@ -19,7 +19,7 @@ const Banner = ({
       <div className={styles.searchWrapper}>
         <input
           type="text"
-          placeholder="search coffee"
+          placeholder="search: electronics"
           className={styles.input}
           onChange={(e) => setSearchTerm(e.target.value)}
           value={inputValue}

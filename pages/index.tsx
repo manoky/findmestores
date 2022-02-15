@@ -1,28 +1,31 @@
 import type { NextPage, GetStaticProps } from "next";
 import Head from "next/head";
 import Image from "next/image";
+import { useRouter } from "next/router";
 import Banner from "components/Banner";
 import CardList from "components/CardList";
 import styles from "styles/Home.module.css";
-import { CoffeeStoreDataType } from "types";
-import { useLocation } from "hooks";
+import { CoffeeStoreDataType } from "types/CoffeeStoreDataType";
+import { useLocation } from "hooks/useLocation";
 import { useEffect, useState } from "react";
 import { useStoreContext } from "context/StoreContext";
 import { FetchStores } from "utils/fetchApi";
+import { Loader } from "components/Loader";
 
 interface CoffeeStoreProps {
   stores: CoffeeStoreDataType[];
 }
 
 const Home: NextPage<CoffeeStoreProps> = ({ stores: initialStore }) => {
-  const { locationError, acessLocation, isLocating } = useLocation();
-  const [stores, setStores] = useState(initialStore);
-  const [query, setQuery] = useState("");
-
   const {
     dispatch,
     state: { latLong, nearByStores, searchTerm },
   } = useStoreContext();
+
+  const { locationError, acessLocation, isLocating } = useLocation();
+  const [stores, setStores] = useState(searchTerm ? [] : initialStore);
+  const [query, setQuery] = useState("");
+  const router = useRouter();
 
   const onButtonClick = () => {
     acessLocation();
@@ -31,7 +34,9 @@ const Home: NextPage<CoffeeStoreProps> = ({ stores: initialStore }) => {
   useEffect(() => {
     async function fetchStores() {
       const data = await fetch(
-        `api/coffee-stores?latlong=${latLong}&limit=9&query=${searchTerm}`
+        `api/coffee-stores?latlong=${latLong}&limit=9&query=${
+          searchTerm || "coffee"
+        }`
       );
 
       const stores = await data.json();
@@ -55,15 +60,22 @@ const Home: NextPage<CoffeeStoreProps> = ({ stores: initialStore }) => {
       }
     }
 
-    fetchStores();
+    if (searchTerm) {
+      fetchStores();
+    }
   }, [searchTerm]);
 
   const handleSearch = () => {
     if (query) {
       dispatch({ type: "SET_QUERY", payload: query });
       setQuery("");
+      router.push(`/?search=${query}`);
     }
   };
+
+  if (stores.length === 0) {
+    return <Loader />;
+  }
 
   return (
     <div className={styles.container}>

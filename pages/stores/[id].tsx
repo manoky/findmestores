@@ -94,7 +94,7 @@ const CoffeeStore: NextPage<Props> = ({ store: initialStore }) => {
             <Image src="/static/icons/star.svg" width={24} height={24} alt="" />
             <p className={styles.text}>{store.votes}</p>
           </div>
-          {/* <p>{store.neighbourhood}</p> */}
+
           <button className={styles.upvoteButton} onClick={handleUpVote}>
             Up vote!
           </button>
@@ -113,8 +113,8 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
         coffeeStores?.find(
           (store: CoffeeStoreDataType) => store.id === params?.id
         ) || null,
-      revalidate: 10,
     },
+    revalidate: 10,
   };
 };
 export const getStaticPaths: GetStaticPaths = async () => {

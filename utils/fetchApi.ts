@@ -4,7 +4,10 @@ import {
 } from "types/CoffeeStoreDataType";
 import { getStoresRoute, getStoreRouteById } from "constants/routes";
 import { findStores, saveStores } from "utils/airtable";
-import { FieldSet } from "airtable";
+
+type CachedType = {
+  [key: string]: CoffeeStoreDataType;
+};
 
 export const fetchImages = async (total: number = 9) => {
   const page = Math.floor(Math.random() * 10 + 1);
@@ -61,10 +64,17 @@ export const FetchStores = async ({
     );
 
     const cachedStores = (await findStores()) || [];
+    const keyValStores = cachedStores.reduce(
+      (stores: CachedType, store: CoffeeStoreDataType) => {
+        stores[store.id] = store;
+        return stores;
+      },
+      {}
+    );
 
     const filteredStores = stores.reduce(
       (acc: CoffeeStoreDataType[], store: CoffeeStoreDataType) => {
-        if (cachedStores?.find((c) => c.id === store.id)) {
+        if (keyValStores[store.id]) {
           return acc;
         }
 
@@ -77,21 +87,32 @@ export const FetchStores = async ({
       await saveStores(filteredStores);
     }
 
-    const storesToReturn = cachedStores.reduce(
-      (acc: FieldSet[], store: FieldSet) => {
-        if (
-          stores?.find(
-            (c: CoffeeStoreDataType) =>
-              c.id === store.id && c.category === store.category
-          )
-        ) {
-          return [...acc, store];
+    // const storesToReturn = cachedStores.reduce(
+    //   (acc: CoffeeStoreDataType[], store: CoffeeStoreDataType) => {
+    //     if (
+    //       stores?.find(
+    //         (c: CoffeeStoreDataType) =>
+    //           c.id === store.id && c.category === store.category
+    //       )
+    //     ) {
+    //       return [...acc, store];
+    //     }
+    //     return acc;
+    //   },
+    //   []
+    // );
+
+    const storesToReturn = stores.reduce(
+      (acc: CoffeeStoreDataType[], store: CoffeeStoreDataType) => {
+        const found = keyValStores[store.id];
+        if (found) {
+          return [...acc, found];
         }
         return acc;
       },
       []
     );
-    // console.log({ storesToReturn, query });
+
     const allStores = storesToReturn.length > 0 ? storesToReturn : stores;
 
     return allStores as unknown as CoffeeStoreDataType[];

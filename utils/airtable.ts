@@ -35,7 +35,7 @@ export const findStores = async () => {
   });
 
   if (stores.length > 0) {
-    return stores;
+    return stores as unknown as CoffeeStoreDataType[];
   }
   return null;
 };

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useStoreContext } from "context";
+import { useStoreContext } from "context/StoreContext";
 
 export const useLocation = () => {
   const { dispatch } = useStoreContext();
