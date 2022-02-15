@@ -51,6 +51,7 @@ const CoffeeStore: NextPage<Props> = ({ store: initialStore }) => {
       <div className={styles.backToHomeLink}>
         <Head>
           <title>{store.name}</title>
+          <meta name="description" content={`${store.name} store`} />
         </Head>
       </div>
       <div className={styles.container}>
